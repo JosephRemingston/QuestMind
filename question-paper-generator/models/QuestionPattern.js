@@ -1,0 +1,2 @@
+import { model, owner, ref, requiredText, mixed, sectionSchema } from './shared.js';
+export default model('QuestionPattern', { userId: owner, name: requiredText, builtIn: { type: Boolean, default: false }, samplePaperId: ref('SamplePaper'), sections: [sectionSchema], totalMarks: Number, totalQuestions: Number, difficultyDistribution: mixed, analysis: mixed, isActive: { type: Boolean, default: true } }, [[{ userId: 1, createdAt: -1 }, {}], [{ samplePaperId: 1 }, { unique: true, partialFilterExpression: { samplePaperId: { $type: 'objectId' } } }]]);

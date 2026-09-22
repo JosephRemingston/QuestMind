@@ -1,0 +1,2 @@
+import { model, owner, ref, mixed } from './shared.js';
+export default model('BookChunk', { userId: owner, textbookId: ref('Textbook', true), chapterId: ref('Chapter', true), text: { type: String, required: true }, pageNumber: Number, sectionTitle: String, chunkIndex: Number, embedding: { type: [Number], select: false }, embeddingModel: String, metadata: mixed }, [[{ textbookId: 1, chapterId: 1, chunkIndex: 1 }, { unique: true }], [{ chapterId: 1 }, {}]]);

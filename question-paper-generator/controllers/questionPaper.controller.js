@@ -1,0 +1,10 @@
+import ApiResponse from '../utils/ApiResponse.js';
+import * as s from '../services/papers/questionPaper.service.js';
+export const generate = async (req, res) => ApiResponse.success(res, 'Generation queued', await s.generate(req.user.id, req.validated.body, req.get('Idempotency-Key')), 202);
+export const list = async (req, res) => ApiResponse.success(res, 'Question papers', await s.listPapers(req.user.id, req.validated.query));
+export const details = async (req, res) => ApiResponse.success(res, 'Question paper', await s.getPaper(req.params.id, req.user.id));
+export const remove = async (req, res) => { await s.archivePaper(req.params.id, req.user.id); return ApiResponse.success(res, 'Question paper archived'); };
+export const regenerate = async (req, res) => ApiResponse.success(res, 'Regeneration queued', await s.regenerate(req.params.id, req.user.id, req.get('Idempotency-Key')), 202);
+export const answerKey = async (req, res) => ApiResponse.success(res, 'Answer key', { answerKey: await s.answerKey(req.params.id, req.user.id) });
+export const pdf = async (req, res) => ApiResponse.success(res, 'Download available', await s.pdf(req.params.id, req.user.id, req.validated.query.kind === 'answer-key'));
+export const job = async (req, res) => ApiResponse.success(res, 'Generation status', await s.getJob(req.params.id, req.user.id));

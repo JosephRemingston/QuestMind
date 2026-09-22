@@ -1,0 +1,2 @@
+export const SAFETY_POLICY = 'Produce age-appropriate school assessments in the requested medium. Do not produce sexualized content involving minors, hateful abuse, personal data, or instructions for violence or self-harm. Academic discussion of biology, history, health, and literature is allowed when age-appropriate. Return safe=false in validation for unsafe output.';
+export function basicSafety(text) { return !/[\u0000-\u0008]/.test(text) && !/(?:BEGIN (?:RSA |EC )?PRIVATE KEY|sk-[A-Za-z0-9]{30,})/.test(text); }

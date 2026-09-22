@@ -1,0 +1,15 @@
+import { Router } from 'express';
+import { z } from 'zod';
+import { requireAuth, requireRole } from '../middlewares/auth.middleware.js';
+import { upload } from '../middlewares/upload.middleware.js';
+import { validate } from '../middlewares/validate.middleware.js';
+import { rateLimit } from '../middlewares/rateLimit.middleware.js';
+import limits from '../configs/rateLimit.js';
+import { listQuery, text } from '../utils/validators.js';
+import { resourceId } from './shared.js';
+import * as c from '../controllers/samplePaper.controller.js';
+import a from '../utils/asyncHandler.js';
+const r = Router(); r.use(requireAuth());
+r.post('/upload', requireRole('teacher', 'admin'), rateLimit('upload', req => req.user.id, limits.upload), upload('sample'), validate(z.object({ title: text }).strict()), a(c.upload));
+r.get('/', validate(listQuery, 'query'), a(c.list)); r.get('/:id', resourceId, a(c.details));
+export default r;

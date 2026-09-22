@@ -1,0 +1,2 @@
+import { env } from './env.js';
+export default { sendPhone: { limit: env.OTP_SEND_LIMIT, seconds: env.OTP_RATE_LIMIT_WINDOW }, verifyPhone: { limit: env.OTP_MAX_ATTEMPTS, seconds: env.OTP_RATE_LIMIT_WINDOW }, otpIp: { limit: env.OTP_IP_LIMIT, seconds: env.OTP_IP_WINDOW }, generation: { limit: Math.min(env.GENERATION_RATE_LIMIT, env.MAX_GENERATIONS_PER_HOUR), seconds: 3600 }, upload: { limit: env.UPLOAD_RATE_LIMIT, seconds: 3600 }, global: { limit: env.API_RATE_LIMIT, seconds: env.API_RATE_WINDOW } };

@@ -1,0 +1,18 @@
+import { Router } from 'express';
+import { z } from 'zod';
+import { requireAuth, requireRole } from '../middlewares/auth.middleware.js';
+import { validate } from '../middlewares/validate.middleware.js';
+import { profileBody, text, listQuery } from '../utils/validators.js';
+import { update } from '../controllers/user.controller.js';
+import * as profiles from '../controllers/studentProfile.controller.js';
+import { resourceId } from './shared.js';
+import a from '../utils/asyncHandler.js';
+const r = Router(); r.use(requireAuth());
+r.patch('/me', validate(profileBody), a(update));
+const student = z.object({ name: text, board: text, classLevel: z.string().regex(/^(?:[1-9]|1[0-2])$/), medium: text }).strict();
+r.use('/students', requireRole('parent', 'admin'));
+r.get('/students', validate(listQuery, 'query'), a(profiles.list));
+r.post('/students', validate(student), a(profiles.create));
+r.patch('/students/:id', resourceId, validate(student.partial()), a(profiles.update));
+r.delete('/students/:id', resourceId, a(profiles.remove));
+export default r;

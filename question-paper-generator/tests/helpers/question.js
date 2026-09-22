@@ -1,0 +1,3 @@
+export const context = [{ chunkId: 'c'.repeat(24), chapterId: 'b'.repeat(24), page: 2, text: 'A triangle has three sides. An equilateral triangle has three equal sides. The sum of its interior angles is 180 degrees.' }];
+export const slot = { questionNumber: 1, sectionIndex: 0, type: 'mcq', marks: 1, difficulty: 'medium' };
+export const question = () => ({ ...slot, question: 'How many sides does a triangle have?', options: ['Two', 'Three', 'Four', 'Five'], correctAnswer: 'Three', explanation: 'A triangle has three sides.', concept: 'Triangle sides', evidence: 'A triangle has three sides.', source: { chapterId: context[0].chapterId, chunkIds: [context[0].chunkId], page: 2 } });

@@ -1,0 +1,13 @@
+import { Router } from 'express';
+import { requireAuth, requireRole } from '../middlewares/auth.middleware.js';
+import { validate } from '../middlewares/validate.middleware.js';
+import { listQuery, patternBody } from '../utils/validators.js';
+import { resourceId } from './shared.js';
+import * as c from '../controllers/pattern.controller.js';
+import a from '../utils/asyncHandler.js';
+const r = Router(); r.use(requireAuth());
+r.get('/', validate(listQuery, 'query'), a(c.list)); r.get('/:id', resourceId, a(c.details));
+r.post('/', requireRole('teacher', 'admin'), validate(patternBody), a(c.create));
+r.patch('/:id', requireRole('teacher', 'admin'), resourceId, validate(patternBody), a(c.update));
+r.delete('/:id', requireRole('teacher', 'admin'), resourceId, a(c.remove));
+export default r;

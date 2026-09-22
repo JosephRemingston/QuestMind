@@ -1,0 +1,10 @@
+process.env.NODE_ENV = 'test';
+process.env.JWT_ACCESS_SECRET = 'test-access-secret-at-least-thirty-two-characters';
+process.env.JWT_REFRESH_SECRET = 'test-refresh-secret-at-least-thirty-two-characters';
+process.env.LLM_PROVIDER = 'disabled';
+process.env.EMBEDDING_PROVIDER = 'disabled';
+process.env.AWS_S3_BUCKET = 'questmind-test-private';
+process.env.OTP_SEND_LIMIT = '5';
+process.env.OTP_MAX_ATTEMPTS = '10';
+process.env.LLM_TIMEOUT_MS = '1000';
+process.env.LOG_LEVEL = 'silent';

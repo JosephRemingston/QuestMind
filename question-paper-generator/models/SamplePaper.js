@@ -1,0 +1,2 @@
+import { model, ref, requiredText, mixed } from './shared.js';
+export default model('SamplePaper', { userId: ref('User', true), title: requiredText, s3Key: { ...requiredText, select: false }, originalFilename: String, mimeType: String, size: Number, extractedText: { type: String, select: false }, analyzedPattern: mixed, patternId: ref('QuestionPattern'), processingStatus: { type: String, enum: ['queued', 'processing', 'ready', 'failed'], default: 'queued' }, processingError: String }, [[{ userId: 1, createdAt: -1 }, {}]]);

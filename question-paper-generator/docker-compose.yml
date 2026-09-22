@@ -1,0 +1,89 @@
+# Local deployment. Use authenticated TLS-managed MongoDB/Redis for production.
+services:
+  api:
+    build:
+      context: ..
+      dockerfile: question-paper-generator/Dockerfile
+    env_file: .env
+    environment:
+      NODE_ENV: development
+      MONGO_URI: mongodb://mongodb:27017/?replicaSet=rs0
+      REDIS_URL: redis://redis:6379
+    ports:
+      - "127.0.0.1:8080:8080"
+    depends_on:
+      mongo-init:
+        condition: service_completed_successfully
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+    init: true
+    read_only: true
+    tmpfs:
+      - /tmp:size=512m,mode=1777
+    stop_grace_period: 35s
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+  worker:
+    build:
+      context: ..
+      dockerfile: question-paper-generator/Dockerfile
+    command: ["node", "worker.js"]
+    env_file: .env
+    environment:
+      NODE_ENV: development
+      MONGO_URI: mongodb://mongodb:27017/?replicaSet=rs0
+      REDIS_URL: redis://redis:6379
+    depends_on:
+      mongo-init:
+        condition: service_completed_successfully
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+    init: true
+    read_only: true
+    tmpfs:
+      - /tmp:size=512m,mode=1777
+    stop_grace_period: 16m
+    healthcheck:
+      disable: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+  mongodb:
+    image: mongo:8
+    command: ["mongod", "--replSet", "rs0", "--bind_ip_all"]
+    ports:
+      - "127.0.0.1:27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "quit(db.adminCommand('ping').ok ? 0 : 1)"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    restart: unless-stopped
+  mongo-init:
+    image: mongo:8
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    entrypoint: ["mongosh", "--host", "mongodb:27017", "--quiet", "--eval"]
+    command:
+      - "try { rs.status() } catch (e) { rs.initiate({_id:'rs0',members:[{_id:0,host:'mongodb:27017'}]}) }; while (!db.hello().isWritablePrimary) { sleep(1000) }"
+    restart: "no"
+  redis:
+    image: redis:7-alpine
+    command: ["redis-server", "--appendonly", "yes", "--maxmemory-policy", "noeviction"]
+    ports:
+      - "127.0.0.1:6379:6379"
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+volumes:
+  mongo-data:
+  redis-data:

@@ -1,0 +1,17 @@
+import ApiResponse from '../utils/ApiResponse.js';
+import * as books from '../services/textbooks/textbook.service.js';
+import * as search from '../services/textbooks/textbookSearch.service.js';
+import { uploadTextbook } from '../services/textbooks/upload.service.js';
+import { resolveQrCode } from '../services/textbooks/textbookResolver.service.js';
+import { pageChapters } from '../services/textbooks/chapter.service.js';
+export const list = async (req, res) => ApiResponse.success(res, 'Textbooks', await search.searchBooks(req.validated.query, req.user.id));
+export const recommended = async (req, res) => ApiResponse.success(res, 'Recommended textbooks', await search.recommended(req.user, req.validated.query));
+export const details = async (req, res) => ApiResponse.success(res, 'Textbook', await books.details(req.params.id, req.user.id));
+export const chapters = async (req, res) => ApiResponse.success(res, 'Chapters', await pageChapters(req.params.id, req.user.id, req.validated.query));
+export const upload = async (req, res) => ApiResponse.success(res, 'Textbook queued for processing', await uploadTextbook(req.user.id, req.validated.body, req.file), 202);
+export const resolve = async (req, res) => ApiResponse.success(res, 'Textbook resolution', await resolveQrCode(req.validated.body.code, req.user.id));
+export const create = async (req, res) => ApiResponse.success(res, 'Textbook created', await books.createCatalogBook(req.validated.body), 201);
+export const edit = async (req, res) => ApiResponse.success(res, 'Textbook updated', await books.editCatalogBook(req.params.id, req.validated.body));
+export const remove = async (req, res) => { await books.disableCatalogBook(req.params.id); return ApiResponse.success(res, 'Textbook disabled'); };
+export const addChapter = async (req, res) => ApiResponse.success(res, 'Chapter created', await books.addChapter(req.params.id, req.validated.body), 201);
+export const editChapter = async (req, res) => ApiResponse.success(res, 'Chapter updated', await books.editChapter(req.params.id, req.validated.body));

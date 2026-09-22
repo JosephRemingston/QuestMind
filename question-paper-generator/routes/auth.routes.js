@@ -1,0 +1,16 @@
+import { Router } from 'express';
+import * as c from '../controllers/auth.controller.js';
+import a from '../utils/asyncHandler.js';
+import { requireAuth } from '../middlewares/auth.middleware.js';
+import { validate } from '../middlewares/validate.middleware.js';
+import { rateLimit } from '../middlewares/rateLimit.middleware.js';
+import limits from '../configs/rateLimit.js';
+import * as v from '../utils/validators.js';
+const r = Router();
+r.use((_req, res, next) => { res.setHeader('Cache-Control', 'no-store'); next(); });
+r.post('/send-otp', validate(v.otpSend), rateLimit('otp-ip', req => req.ip, limits.otpIp, 'OTP_RATE_LIMITED'), rateLimit('otp-send', req => req.validated.body.phoneNumber, limits.sendPhone, 'OTP_RATE_LIMITED'), a(c.sendOtp));
+r.post('/verify-otp', validate(v.otpVerify), rateLimit('otp-verify-ip', req => req.ip, limits.otpIp, 'OTP_RATE_LIMITED'), rateLimit('otp-verify', req => req.validated.body.phoneNumber, limits.verifyPhone, 'OTP_RATE_LIMITED'), a(c.verifyOtp));
+r.post('/refresh', validate(v.refresh), a(c.refresh));
+r.post('/logout', requireAuth(), a(c.logout));
+r.get('/me', requireAuth(), a(c.me));
+export default r;

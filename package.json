@@ -4,9 +4,14 @@
   "description": "",
   "license": "ISC",
   "author": "",
-  "type": "commonjs",
-  "main": "index.js",
+  "private": true,
+  "type": "module",
+  "workspaces": ["question-paper-generator"],
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "npm run dev -w question-paper-generator",
+    "start": "npm start -w question-paper-generator",
+    "worker": "npm run worker -w question-paper-generator",
+    "test": "npm test -w question-paper-generator",
+    "check": "npm run check -w question-paper-generator"
   }
 }
